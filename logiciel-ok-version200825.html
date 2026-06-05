@@ -1,0 +1,249 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Numérologie — Diagramme simple (offline)</title>
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial; background:#f5f5f7; color:#111;}
+  .wrap{max-width:1200px;margin:20px auto;padding:12px;}
+  .card{background:#fff;border:1px solid #e5e7eb;border-radius:14px;box-shadow:0 2px 8px rgba(0,0,0,.05);padding:14px;}
+  .controls{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px;margin-bottom:12px}
+  .controls label{font-size:13px;font-weight:600;color:#374151;margin-bottom:6px;display:block}
+  .controls input[type="text"], .controls input[type="date"]{width:100%;padding:9px 10px;border:1px solid #e5e7eb;border-radius:10px;font-size:15px}
+  .row{display:flex;gap:16px;align-items:center}
+  .btn{display:inline-block;padding:9px 12px;border-radius:10px;border:1px solid #111;background:#111;color:#fff;font-weight:700;cursor:pointer}
+  .muted{color:#6b7280;font-size:13px}
+  #foot{padding:8px 12px;border-top:1px solid #e5e7eb;display:flex;gap:12px;align-items:center}
+  #foot div:first-child,#foot div:nth-child(3){font-weight:700}
+  @media print{body{background:#fff}.noprint{display:none!important}.wrap{max-width:none;margin:0;padding:0}.card{border:none;border-radius:0;box-shadow:none}@page{size:A4;margin:14mm}}
+
+  /* --- PDF export: Landscape --- */
+  @media print {
+    @page { size: A4 landscape; margin: 12mm; }
+    html, body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    /* Hide UI-only elements */
+    .noprint, #btn-export-pdf { display: none !important; }
+    /* Avoid split cards */
+    .card { break-inside: avoid; page-break-inside: avoid; }
+  }
+
+
+  /* --- Print landscape: fit template + inclusion on one page --- */
+  @media print {
+    @page { size: A4 landscape; margin: 0; }
+    html, body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .noprint { display: none !important; }
+    /* Scale the main board (diagram + inclusion) to fit A4 landscape height */
+    #board { transform: scale(0.86); transform-origin: top left; width: 1000px; }
+    .card { break-inside: avoid; page-break-inside: avoid; }
+    /* Optional: tighten vertical spacing */
+    #inclusion { margin-top: 6px !important; }
+  }
+
+</style>
+</head>
+<body>
+<div class="wrap">
+<div style="text-align:left; font-weight:700; font-size:18px; margin-bottom:10px;">
+  Thème Numérologie – by Essence d’âme
+</div>
+<div class="card noprint">
+    <div class="controls">
+      <div><label>Identité complète (Prénoms, nom de naissance)</label><input id="name" type="text" placeholder="Ex. Jeanne Marie Dupond"></div>
+      <div><label>Date de naissance</label><input id="birth" type="date"></div>
+      <div class="row">
+        <label><input id="masters" type="checkbox" checked> Conserver 11/22/33</label>
+        <label><input id="yVowel" type="checkbox" checked> Y traité comme voyelle</label>
+      </div>
+    </div>
+    <button class="btn" onclick="window.print()">Exporter en PDF</button>
+  </div>
+
+  <div class="card" id="board" style="padding:0;">
+    <svg id="svg" viewBox="0 0 1200 760" xmlns="http://www.w3.org/2000/svg">
+      <!-- edges -->
+      <line x1="150" y1="380" x2="1030" y2="380" stroke="#111" stroke-width="3" stroke-dasharray="6 8"/>
+      <g stroke="#111" stroke-width="2Ò" fill="none">
+		 <path d="M140 350 L300 270" marker-end="url(#arrow)"></path>
+        <path d="M140 390 L300 520" marker-end="url(#arrow)"></path>
+        <path d="M345 240 L500 170" marker-end="url(#arrow)"></path>
+        <path d="M345 240 L500 280" marker-end="url(#arrow)"></path>
+        <path d="M540 160 L710 220" stroke-dasharray="8 8" marker-end="url(#arrow)"></path>
+        <path d="M380 545 L560 500" marker-end="url(#arrow)"></path>
+        <path d="M380 560 L560 600" marker-end="url(#arrow)"></path>
+      </g>
+      <defs>
+        <marker id="arrow" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+          <path d="M0 0 L10 5 L0 10 Z" fill="#111"></path>
+        </marker>
+      </defs>
+      <!-- person -->
+<g transform="translate(110,320)" fill="#2b2b2b">
+        <circle cx="0" cy="-28" r="18"></circle>
+        <rect x="-13" y="-8" width="26" height="60" rx="8"></rect>
+        <rect id="arm-left"  x="-36" y="8" width="18" height="8" rx="4" fill="#111"></rect>
+        <rect id="arm-right" x="16"  y="8" width="18" height="8" rx="4" fill="#111"></rect>
+        <rect x="-16" y="46" width="12" height="46" rx="8"></rect>
+        <rect x="5" y="46" width="12" height="46" rx="8"></rect>
+      </g>
+      <!-- base nodes -->
+      
+      <!-- base nodes: removed as requested -->
+
+      <!-- labels -->
+      <g font-size="20" fill="#111" font-weight="600" text-anchor="middle">
+		 <text x="320" y="200">Chemin de vie</text>
+        <text x="538" y="130">Jour</text>
+        <text x="538" y="240">Mois</text>
+        <text x="745" y="190">Année</text>
+        <text x="330" y="490">Expression</text>
+        <text x="600" y="450">Voyelles</text>
+        <text x="600" y="660">Consonnes</text>
+        <text x="820" y="490">Prénom</text>
+        <text x="905" y="490">Nom</text>
+      </g>
+      <!-- chips -->
+      <g id="chips" font-weight="500" font-size="26" text-anchor="middle" fill="#000">
+		<g id="chip-chemin" transform="translate(330,255)"><circle r="36" stroke="#fff" stroke-width="6" fill="#ec4899"/><text y="8">33/6</text></g>
+        <g id="chip-jourmois" transform="translate(1050,370)"><circle r="36" stroke="#fff" stroke-width="6" fill="#6b7280"/><text y="8">—</text></g>
+        <g id="chip-jour" transform="translate(540,170)"><circle r="36" stroke="#fff" stroke-width="6" fill="#6b7280"/><text y="8">7</text></g>
+        <g id="chip-mois" transform="translate(540,280)"><circle r="36" stroke="#fff" stroke-width="6" fill="#6b7280"/><text y="8">7</text></g>
+        <g id="chip-annee" transform="translate(745,230)"><circle r="36" stroke="#fff" stroke-width="6" fill="#ef4444"/><text y="8">1</text></g>
+        <g id="chip-expression" transform="translate(330,540)"><circle r="36" stroke="#fff" stroke-width="6" fill="#f97316"/><text y="8">5</text></g>
+        <g id="chip-voyelles" transform="translate(600,500)"><circle r="36" stroke="#fff" stroke-width="6" fill="#22c55e"/><text y="8">3</text></g>
+        <g id="chip-consonnes" transform="translate(600,600)"><circle r="36" stroke="#fff" stroke-width="6" fill="#3b82f6"/><text y="8">11/2</text></g>
+        <g id="chip-prenom" transform="translate(820,540)"><circle r="36" stroke="#fff" stroke-width="6" fill="#6b7280"/><text y="8">7</text></g>
+        <g id="chip-nom" transform="translate(905,540)"><circle r="36" stroke="#fff" stroke-width="6" fill="#22c55e"/><text y="8">3</text></g>
+
+      </g>
+    </svg>
+<svg id="inclusion" viewBox="0 0 1200 160" xmlns="http://www.w3.org/2000/svg" style="margin-top:10px">
+      <!-- Row 1: fixed bubbles 1..9 (text black, bubbles #f8f5e9) -->
+      <g id="inc-row-labels" font-size="25" fill="#111" font-weight="600" text-anchor="middle">
+        <g fill="#f8f5e9" stroke="#111" stroke-width="2"><circle cx="220" cy="37" r="25"></circle><circle cx="305" cy="37" r="25"></circle><circle cx="390" cy="37" r="25"></circle><circle cx="475" cy="37" r="25"></circle><circle cx="560" cy="37" r="25"></circle><circle cx="645" cy="37" r="25"></circle><circle cx="730" cy="37" r="25"></circle><circle cx="815" cy="37" r="25"></circle><circle cx="900" cy="37" r="25"></circle></g>
+        <text x="220" y="45">1</text><text x="305" y="45">2</text><text x="390" y="45">3</text><text x="475" y="45">4</text><text x="560" y="45">5</text><text x="645" y="45">6</text><text x="730" y="45">7</text><text x="815" y="45">8</text><text x="900" y="45">9</text>
+      </g>
+
+      <!-- Row 2: dynamic counts (number of letters mapping to each value) -->
+      <g id="inc-row-counts" font-size="25" fill="#111" font-weight="600" text-anchor="middle">
+        <g id="inc-bubbles" fill="#ffffff" stroke="#111" stroke-width="2">
+          <circle id="inc-b1" cx="220" cy="100" r="25"></circle><circle id="inc-b2" cx="305" cy="100" r="25"></circle><circle id="inc-b3" cx="390" cy="100" r="25"></circle><circle id="inc-b4" cx="475" cy="100" r="25"></circle><circle id="inc-b5" cx="560" cy="100" r="25"></circle><circle id="inc-b6" cx="645" cy="100" r="25"></circle><circle id="inc-b7" cx="730" cy="100" r="25"></circle><circle id="inc-b8" cx="815" cy="100" r="25"></circle><circle id="inc-b9" cx="900" cy="100" r="25"></circle>
+        </g>
+        <text id="inc-c1" x="220" y="108">0</text><text id="inc-c2" x="305" y="108">0</text><text id="inc-c3" x="390" y="108">0</text><text id="inc-c4" x="475" y="108">0</text><text id="inc-c5" x="560" y="108">0</text><text id="inc-c6" x="645" y="108">0</text><text id="inc-c7" x="730" y="108">0</text><text id="inc-c8" x="815" y="108">0</text><text id="inc-c9" x="900" y="108">0</text>
+      </g>
+    </svg>
+<div id="out-name" style="color:#fff">—</div><div style="color:#fff">•</div><div style="color:#fff">Date :</div><div id="out-date" style="color:#fff">—</div></div>
+  </div>
+
+  <div class="card noprint" style="margin-top:10px;">
+      </div>
+</div>
+
+<script>
+  // ------- Calc helpers -------
+  function stripDiacritics(str){return (str||'').normalize('NFD').replace(/\p{Diacritic}+/gu,'').replace(/[^A-Za-z\s'-]/g,'')}
+  const VOWELS_BASE=new Set(['A','E','I','O','U']);
+  function isVowel(l,y){if(!l)return false;const L=l.toUpperCase();if(VOWELS_BASE.has(L))return true; if(L==='Y')return !!y; return false;}
+  function letterToP(l){const L=l.toUpperCase(); if(L<'A'||L>'Z')return 0; const code=L.charCodeAt(0)-64; const mod=code%9; return mod===0?9:mod;}
+  const sumDigits=n=>n.toString().split('').filter(c=>/[0-9]/.test(c)).map(d=>+d).reduce((a,b)=>a+b,0);
+  function reduceNumber(n,keep=true){let c=n; const isM=x=>keep&&(x===11||x===22||x===33); while(c>9&&!isM(c)){c=sumDigits(c)} return {root:c,isMaster:isM(c)};}
+  function reduceFromDigits(d,keep=true){const total=d.reduce((a,b)=>a+b,0); const r=reduceNumber(total,keep); return {total,root:r.root,isMaster:r.isMaster};}
+  function dateToDigits(s){if(!s||!/^\d{4}-\d{2}-\d{2}$/.test(s))return[]; return s.replace(/-/g,'').split('').map(d=>+d)}
+  function computeNameNumbers(rawName,yAsVowel=true,keep=true){
+    const cleaned=stripDiacritics(rawName||''); const letters=cleaned.replace(/[^A-Za-z]/g,'').toUpperCase().split('');
+    const values=letters.map(letterToP); const totalAll=values.reduce((a,b)=>a+b,0); const expr=reduceNumber(totalAll,keep);
+    const vowelVals=letters.filter(L=>isVowel(L,yAsVowel)).map(letterToP); const totalV=vowelVals.reduce((a,b)=>a+b,0); const soul=reduceNumber(totalV,keep);
+    const consVals=letters.filter(L=>!isVowel(L,yAsVowel)).map(letterToP); const totalC=consVals.reduce((a,b)=>a+b,0); const pers=reduceNumber(totalC,keep);
+    const parts=cleaned.trim().split(/\s+/g).filter(Boolean); const fn=parts[0]||''; const ln=parts.length>1?parts[parts.length-1]:'';
+    const sumWord=w=>w.toUpperCase().split('').map(letterToP).reduce((a,b)=>a+b,0);
+    const fT=sumWord(fn), lT=sumWord(ln);
+    return {expression:{root:expr.root}, soulUrge:{root:soul.root}, personality:{root:pers.root},
+            firstName:{root:reduceNumber(fT,keep).root}, lastName:{root:reduceNumber(lT,keep).root}};
+  }
+  function prettyMaster(r){if(r===11)return'11/2'; if(r===22)return'22/4'; if(r===33)return'33/6'; return String(r);}
+  function mapToBase(n){if(n===11)return 2; if(n===22)return 4; if(n===33)return 6; return n;}
+  function colorFor(n){switch(mapToBase(n)){case 1:return '#f69497'; case 2:return '#99c8f1'; case 3:return '#d6e4a1'; case 4:return '#f4db73'; case 5:return '#ffb282'; case 6:return '#ffafe0'; case 7:return '#d9d9d9'; case 8:return '#daa289'; case 9:return '#ebc6f6'; default:return '#111';}}
+
+  function dayMonthSumRoot(dateStr, keep=true){
+    if(!/^\d{4}-\d{2}-\d{2}$/.test(dateStr||'')) return null;
+    const [y,m,d] = dateStr.split('-').map(s=>parseInt(s,10));
+    const s = d + m;
+    const digits = String(s).split('').map(v=>+v);
+    const r = reduceFromDigits(digits, keep);
+    return r.root;
+  }
+
+  const $=sel=>document.querySelector(sel);
+  function setChip(id,val){const g=$('#'+id), c=g.querySelector('circle'), t=g.querySelector('text'); if(val==null||Number.isNaN(val)){t.textContent='—'; c.setAttribute('fill','#d1d5db'); return;} t.textContent=prettyMaster(val); c.setAttribute('fill',colorFor(val));}
+
+  function render(){
+    const name=$('#name').value, date=$('#birth').value, keep=$('#masters').checked, yv=$('#yVowel').checked;
+    $('#out-name').textContent=(name||'—').toUpperCase(); $('#out-date').textContent=date||'—';
+    const dateDigits=dateToDigits(date);
+    const life=dateDigits.length?reduceFromDigits(dateDigits,keep):null;
+    const day=date?reduceNumber(parseInt(date.split('-')[2],10),keep):null;
+    const month=date?reduceNumber(parseInt(date.split('-')[1],10),keep):null;
+    const year=(function(){if(!date)return null; const y=parseInt(date.split('-')[0],10); return reduceFromDigits(String(y).split('').map(v=>+v),keep)})();
+    const nn=computeNameNumbers(name,yv,keep);
+    setChip('chip-chemin',life&&life.root); setChip('chip-jour',day&&day.root); setChip('chip-mois',month&&month.root); setChip('chip-annee',year&&year.root);
+    setChip('chip-expression',nn.expression.root); setChip('chip-voyelles',nn.soulUrge.root); setChip('chip-consonnes',nn.personality.root);
+    setChip('chip-prenom',nn.firstName.root); setChip('chip-nom',nn.lastName.root);
+    const dm = dayMonthSumRoot(date, keep);
+    setChip('chip-jourmois', dm);
+    // --- Inclusion counts ---
+    (function(){
+      const name = document.querySelector('#name') ? document.querySelector('#name').value : '';
+      const cleaned = stripDiacritics(name).replace(/[^A-Za-z]/g,'').toUpperCase();
+      const counts = Array(10).fill(0);
+      for(let i=0;i<cleaned.length;i++){
+        const v = letterToP(cleaned[i]);
+        if(v>=1 && v<=9) counts[v]++;
+      }
+      // update numbers
+      for(let k=1;k<=9;k++){
+        const el = document.getElementById('inc-c'+k);
+        if(el) el.textContent = String(counts[k]||0);
+      }
+      // color bottom row by COUNT (reduced 1..9). 0 -> white
+      function incColorFor(n){
+        switch(n){
+          case 1: return '#f69497'; // rouge
+          case 2: return '#99c8f1'; // bleu
+          case 3: return '#d6e4a1'; // vert
+          case 4: return '#f4db73'; // jaune
+          case 5: return '#ffb282'; // orange
+          case 6: return '#ffafe0'; // rose
+          case 7: return '#d9d9d9'; // gris
+          case 8: return '#daa289'; // marron
+          case 9: return '#ebc6f6'; // violet
+          default: return '#ffffff';
+        }
+      }
+      function reduceToOneNine(n){
+        let c = Math.max(0, parseInt(n||0,10));
+        while(c > 9){ c = String(c).split('').map(Number).reduce((a,b)=>a+b,0); }
+        return c;
+      }
+      for(let k=1;k<=9;k++){
+        const bubble = document.getElementById('inc-b'+k);
+        if(!bubble) continue;
+        const count = counts[k] || 0;
+        if(count > 0){
+          bubble.setAttribute('fill', incColorFor(reduceToOneNine(count)));
+        } else {
+          bubble.setAttribute('fill', '#ffffff');
+        }
+      }
+    })();
+
+  }
+  ['#name','#birth','#masters','#yVowel'].forEach(sel=>$(sel).addEventListener(sel==='#name'?'input':'change',render));
+  render();
+</script>
+<div style="text-align:center; font-size:12px; color:#555; margin-top:20px;">
+  © Essence d’âme – Toute reproduction ou utilisation en dehors de l’abonnement du Numérolab est interdite.
+</div>
+</body>
+</html>
