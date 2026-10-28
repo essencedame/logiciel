@@ -17,45 +17,42 @@
   .muted{color:#6b7280;font-size:13px}
   #foot{padding:8px 12px;border-top:1px solid #e5e7eb;display:flex;gap:12px;align-items:center}
   #foot div:first-child,#foot div:nth-child(3){font-weight:700}
-  @media print{body{background:#fff}.noprint{display:none!important}.wrap{max-width:none;margin:0;padding:0}.card{border:none;border-radius:0;box-shadow:none}@page{size:A4;margin:14mm}}
-
-  /* --- PDF export: Landscape --- */
+  /* Keep the diagram and the inclusion table together on one A4 landscape page. */
+  .controls .row {grid-column:1/-1;flex-wrap:wrap;gap:8px 24px}
+  @page {size:A4 landscape;margin:0}
   @media print {
-    @page { size: A4 landscape; margin: 12mm; }
-    html, body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-    /* Hide UI-only elements */
-    .noprint, #btn-export-pdf { display: none !important; }
-    /* Avoid split cards */
-    .card { break-inside: avoid; page-break-inside: avoid; }
-  }
-
-
-  /* --- Print landscape: fit template + inclusion on one page --- */
-  @media print {
-    @page { size: A4 landscape; margin: 0; }
-    html, body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-    .noprint { display: none !important; }
-    /* Scale the main board (diagram + inclusion) to fit A4 landscape height */
-    #board { transform: scale(0.86); transform-origin: top left; width: 1000px; }
-    .card { break-inside: avoid; page-break-inside: avoid; }
-    /* Optional: tighten vertical spacing */
-    #inclusion { margin-top: 6px !important; }
+    html,body {width:297mm!important;height:210mm!important;margin:0!important;
+      padding:0!important;overflow:hidden!important;background:#fff!important;
+      -webkit-print-color-adjust:exact;print-color-adjust:exact}
+    .noprint {display:none!important}
+    .wrap {position:relative!important;width:297mm!important;height:210mm!important;
+      max-width:none!important;margin:0!important;padding:0!important;overflow:hidden!important}
+    .card {border:0!important;border-radius:0!important;box-shadow:none!important}
+    #board {position:absolute!important;top:8mm!important;left:24.5mm!important;
+      display:block!important;width:248mm!important;max-width:none!important;
+      padding:0!important;margin:0!important;transform:none!important;
+      break-inside:avoid!important;page-break-inside:avoid!important}
+    #board svg {display:block!important;width:100%!important;height:auto!important;
+      max-width:none!important;margin:0!important;padding:0!important}
+    #board > div {display:none!important}
   }
 
 </style>
 </head>
 <body>
 <div class="wrap">
-<div style="text-align:left; font-weight:700; font-size:18px; margin-bottom:10px;">
+<div class="noprint" style="text-align:left; font-weight:700; font-size:18px; margin-bottom:10px;">
   Thème Numérologie – by Essence d’âme
 </div>
 <div class="card noprint">
     <div class="controls">
-      <div><label>Identité complète (Prénoms, nom de naissance)</label><input id="name" type="text" placeholder="Ex. Jeanne Marie Dupond"></div>
+      <div><label for="first-name">Prénom(s)</label><input id="first-name" type="text" autocomplete="given-name" placeholder="Ex. Jeanne Marie"></div>
+      <div><label for="last-name">Nom de famille (de naissance)</label><input id="last-name" type="text" autocomplete="family-name" placeholder="Ex. Le Gall, De La Fontaine"></div>
       <div><label>Date de naissance</label><input id="birth" type="date"></div>
       <div class="row">
         <label><input id="masters" type="checkbox" checked> Conserver 11/22/33</label>
         <label><input id="yVowel" type="checkbox" checked> Y traité comme voyelle</label>
+        <label><input id="subNumbers" type="checkbox"> Afficher les sous-nombres</label>
       </div>
     </div>
     <button class="btn" onclick="window.print()">Exporter en PDF</button>
@@ -65,7 +62,7 @@
     <svg id="svg" viewBox="0 0 1200 760" xmlns="http://www.w3.org/2000/svg">
       <!-- edges -->
       <line x1="150" y1="380" x2="1030" y2="380" stroke="#111" stroke-width="3" stroke-dasharray="6 8"/>
-      <g stroke="#111" stroke-width="2Ò" fill="none">
+      <g stroke="#111" stroke-width="2" fill="none">
 		 <path d="M140 350 L300 270" marker-end="url(#arrow)"></path>
         <path d="M140 390 L300 520" marker-end="url(#arrow)"></path>
         <path d="M345 240 L500 170" marker-end="url(#arrow)"></path>
@@ -134,11 +131,7 @@
         <text id="inc-c1" x="220" y="108">0</text><text id="inc-c2" x="305" y="108">0</text><text id="inc-c3" x="390" y="108">0</text><text id="inc-c4" x="475" y="108">0</text><text id="inc-c5" x="560" y="108">0</text><text id="inc-c6" x="645" y="108">0</text><text id="inc-c7" x="730" y="108">0</text><text id="inc-c8" x="815" y="108">0</text><text id="inc-c9" x="900" y="108">0</text>
       </g>
     </svg>
-<div id="out-name" style="color:#fff">—</div><div style="color:#fff">•</div><div style="color:#fff">Date :</div><div id="out-date" style="color:#fff">—</div></div>
   </div>
-
-  <div class="card noprint" style="margin-top:10px;">
-      </div>
 </div>
 
 <script>
@@ -148,53 +141,105 @@
   function isVowel(l,y){if(!l)return false;const L=l.toUpperCase();if(VOWELS_BASE.has(L))return true; if(L==='Y')return !!y; return false;}
   function letterToP(l){const L=l.toUpperCase(); if(L<'A'||L>'Z')return 0; const code=L.charCodeAt(0)-64; const mod=code%9; return mod===0?9:mod;}
   const sumDigits=n=>n.toString().split('').filter(c=>/[0-9]/.test(c)).map(d=>+d).reduce((a,b)=>a+b,0);
-  function reduceNumber(n,keep=true){let c=n; const isM=x=>keep&&(x===11||x===22||x===33); while(c>9&&!isM(c)){c=sumDigits(c)} return {root:c,isMaster:isM(c)};}
-  function reduceFromDigits(d,keep=true){const total=d.reduce((a,b)=>a+b,0); const r=reduceNumber(total,keep); return {total,root:r.root,isMaster:r.isMaster};}
+  function reduceNumber(n,keep=true){
+    let c=Math.max(0,Math.trunc(Number(n)||0));
+    const chain=[c];
+    const isM=x=>keep&&(x===11||x===22||x===33);
+    while(c>9&&!isM(c)){c=sumDigits(c);chain.push(c);}
+    return {total:chain[0],root:c,isMaster:isM(c),chain};
+  }
+  function reduceFromDigits(d,keep=true){return reduceNumber(d.reduce((a,b)=>a+b,0),keep);}
   function dateToDigits(s){if(!s||!/^\d{4}-\d{2}-\d{2}$/.test(s))return[]; return s.replace(/-/g,'').split('').map(d=>+d)}
-  function computeNameNumbers(rawName,yAsVowel=true,keep=true){
-    const cleaned=stripDiacritics(rawName||''); const letters=cleaned.replace(/[^A-Za-z]/g,'').toUpperCase().split('');
-    const values=letters.map(letterToP); const totalAll=values.reduce((a,b)=>a+b,0); const expr=reduceNumber(totalAll,keep);
-    const vowelVals=letters.filter(L=>isVowel(L,yAsVowel)).map(letterToP); const totalV=vowelVals.reduce((a,b)=>a+b,0); const soul=reduceNumber(totalV,keep);
-    const consVals=letters.filter(L=>!isVowel(L,yAsVowel)).map(letterToP); const totalC=consVals.reduce((a,b)=>a+b,0); const pers=reduceNumber(totalC,keep);
-    const parts=cleaned.trim().split(/\s+/g).filter(Boolean); const fn=parts[0]||''; const ln=parts.length>1?parts[parts.length-1]:'';
-    const sumWord=w=>w.toUpperCase().split('').map(letterToP).reduce((a,b)=>a+b,0);
-    const fT=sumWord(fn), lT=sumWord(ln);
-    return {expression:{root:expr.root}, soulUrge:{root:soul.root}, personality:{root:pers.root},
-            firstName:{root:reduceNumber(fT,keep).root}, lastName:{root:reduceNumber(lT,keep).root}};
+  function computeNameNumbers(firstNames,lastName,yAsVowel=true,keep=true){
+    // An explicit surname field prevents surname particles (LE, DE, etc.)
+    // from being mistaken for given names.
+    const given=stripDiacritics(firstNames||'').trim();
+    const surname=stripDiacritics(lastName||'').trim();
+    const firstOnly=given.split(/\s+/).filter(Boolean)[0]||'';
+    const first=given.replace(/[^A-Za-z]/g,'').toUpperCase();
+    const last=surname.replace(/[^A-Za-z]/g,'').toUpperCase();
+    const letters=(first+last).split('');
+    const vowelVals=letters.filter(L=>isVowel(L,yAsVowel)).map(letterToP);
+    const consVals=letters.filter(L=>!isVowel(L,yAsVowel)).map(letterToP);
+    const total=a=>a.reduce((a,b)=>a+b,0);
+    return {
+      expression:letters.length?reduceNumber(total(letters.map(letterToP)),keep):null,
+      soulUrge:vowelVals.length?reduceNumber(total(vowelVals),keep):null,
+      personality:consVals.length?reduceNumber(total(consVals),keep):null,
+      firstName:firstOnly?reduceNumber(total(firstOnly.toUpperCase().replace(/[^A-Z]/g,'').split('').map(letterToP)),keep):null,
+      lastName:last?reduceNumber(total(last.split('').map(letterToP)),keep):null
+    };
   }
   function prettyMaster(r){if(r===11)return'11/2'; if(r===22)return'22/4'; if(r===33)return'33/6'; return String(r);}
   function mapToBase(n){if(n===11)return 2; if(n===22)return 4; if(n===33)return 6; return n;}
   function colorFor(n){switch(mapToBase(n)){case 1:return '#f69497'; case 2:return '#99c8f1'; case 3:return '#d6e4a1'; case 4:return '#f4db73'; case 5:return '#ffb282'; case 6:return '#ffafe0'; case 7:return '#d9d9d9'; case 8:return '#daa289'; case 9:return '#ebc6f6'; default:return '#111';}}
 
-  function dayMonthSumRoot(dateStr, keep=true){
-    if(!/^\d{4}-\d{2}-\d{2}$/.test(dateStr||'')) return null;
-    const [y,m,d] = dateStr.split('-').map(s=>parseInt(s,10));
-    const s = d + m;
-    const digits = String(s).split('').map(v=>+v);
-    const r = reduceFromDigits(digits, keep);
-    return r.root;
+  function dayMonthSumRoot(dateStr,keep=true){
+    if(!/^\d{4}-\d{2}-\d{2}$/.test(dateStr||''))return null;
+    const [y,m,d]=dateStr.split('-').map(s=>parseInt(s,10));
+    return reduceNumber(d+m,keep);
   }
 
   const $=sel=>document.querySelector(sel);
-  function setChip(id,val){const g=$('#'+id), c=g.querySelector('circle'), t=g.querySelector('text'); if(val==null||Number.isNaN(val)){t.textContent='—'; c.setAttribute('fill','#d1d5db'); return;} t.textContent=prettyMaster(val); c.setAttribute('fill',colorFor(val));}
+  function formatNumber(result,showSubnumbers){
+    if(result==null)return '—';
+    const root=result.root;
+    if(!showSubnumbers)return prettyMaster(root);
+    const chain=result.chain||[root];
+    const parts=[];
+    if(chain.length>1){
+      parts.push(String(chain[0]));
+      // Intermediate numbers are displayed only when they are between 10 and 22.
+      for(let i=1;i<chain.length-1;i++){
+        if(chain[i]>=10&&chain[i]<=22)parts.push(String(chain[i]));
+      }
+    }
+    if(root===11||root===22||root===33){
+      if(parts[parts.length-1]!==String(root))parts.push(String(root));
+      parts.push(String(mapToBase(root)));
+    }else if(parts[parts.length-1]!==String(root)){
+      parts.push(String(root));
+    }
+    return parts.join('/');
+  }
+  function setChip(id,result,showSubnumbers=false){
+    const g=$('#'+id),c=g.querySelector('circle'),t=g.querySelector('text');
+    const root=result==null?null:result.root;
+    if(root==null||Number.isNaN(root)){
+      t.textContent='—';t.removeAttribute('font-size');t.setAttribute('y','8');
+      c.setAttribute('fill','#d1d5db');return;
+    }
+    const formatted=formatNumber(result,showSubnumbers);
+    t.textContent=formatted;
+    // Longer strings stay centered inside the 72px bubbles.
+    const len=formatted.length;
+    const fontSize=len>=11?10:len>=8?13:len>=6?16:len>=5?19:26;
+    t.setAttribute('font-size',String(fontSize));
+    t.setAttribute('y',String(Math.round(fontSize*0.32)));
+    c.setAttribute('fill',colorFor(root));
+  }
 
   function render(){
-    const name=$('#name').value, date=$('#birth').value, keep=$('#masters').checked, yv=$('#yVowel').checked;
-    $('#out-name').textContent=(name||'—').toUpperCase(); $('#out-date').textContent=date||'—';
+    const firstName=$('#first-name').value, lastName=$('#last-name').value;
+    const date=$('#birth').value, keep=$('#masters').checked;
+    const yv=$('#yVowel').checked, showSubs=$('#subNumbers').checked;
     const dateDigits=dateToDigits(date);
     const life=dateDigits.length?reduceFromDigits(dateDigits,keep):null;
     const day=date?reduceNumber(parseInt(date.split('-')[2],10),keep):null;
     const month=date?reduceNumber(parseInt(date.split('-')[1],10),keep):null;
     const year=(function(){if(!date)return null; const y=parseInt(date.split('-')[0],10); return reduceFromDigits(String(y).split('').map(v=>+v),keep)})();
-    const nn=computeNameNumbers(name,yv,keep);
-    setChip('chip-chemin',life&&life.root); setChip('chip-jour',day&&day.root); setChip('chip-mois',month&&month.root); setChip('chip-annee',year&&year.root);
-    setChip('chip-expression',nn.expression.root); setChip('chip-voyelles',nn.soulUrge.root); setChip('chip-consonnes',nn.personality.root);
-    setChip('chip-prenom',nn.firstName.root); setChip('chip-nom',nn.lastName.root);
-    const dm = dayMonthSumRoot(date, keep);
-    setChip('chip-jourmois', dm);
+    const nn=computeNameNumbers(firstName,lastName,yv,keep);
+    setChip('chip-chemin',life,showSubs);setChip('chip-jour',day,showSubs);
+    setChip('chip-mois',month,showSubs);setChip('chip-annee',year,showSubs);
+    setChip('chip-expression',nn.expression,showSubs);
+    setChip('chip-voyelles',nn.soulUrge,showSubs);
+    setChip('chip-consonnes',nn.personality,showSubs);
+    setChip('chip-prenom',nn.firstName,showSubs);
+    setChip('chip-nom',nn.lastName,showSubs);
+    setChip('chip-jourmois',dayMonthSumRoot(date,keep),showSubs);
     // --- Inclusion counts ---
     (function(){
-      const name = document.querySelector('#name') ? document.querySelector('#name').value : '';
+      const name = [firstName,lastName].join(' ');
       const cleaned = stripDiacritics(name).replace(/[^A-Za-z]/g,'').toUpperCase();
       const counts = Array(10).fill(0);
       for(let i=0;i<cleaned.length;i++){
@@ -239,10 +284,10 @@
     })();
 
   }
-  ['#name','#birth','#masters','#yVowel'].forEach(sel=>$(sel).addEventListener(sel==='#name'?'input':'change',render));
+  ['#first-name','#last-name','#birth','#masters','#yVowel','#subNumbers'].forEach(sel=>$(sel).addEventListener(sel==='#first-name'||sel==='#last-name'?'input':'change',render));
   render();
 </script>
-<div style="text-align:center; font-size:12px; color:#555; margin-top:20px;">
+<div class="noprint" style="text-align:center; font-size:12px; color:#555; margin-top:20px;">
   © Essence d’âme – Toute reproduction ou utilisation en dehors de l’abonnement du Numérolab est interdite.
 </div>
 </body>
